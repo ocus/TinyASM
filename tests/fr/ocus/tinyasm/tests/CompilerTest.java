@@ -11,7 +11,7 @@ import fr.ocus.tinyasm.compiler.Compiler;
 import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;
 import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
 
-public class CompilerTest {
+class CompilerTest {
     public static void main(final String[] args) {
         // compileProgram("add.asm", "add.tiny");
         compileProgram("factorial.asm", "factorial.tiny");
@@ -19,7 +19,7 @@ public class CompilerTest {
         // compileProgram("py.asm", "py.tiny");
     }
 
-    static public void compileProgram(final String asmName, final String tinyName) {
+    private static void compileProgram(final String asmName, final String tinyName) {
         final String baseDir = System.getProperty("user.dir") + "\\programs\\";
 
         final String inputFilePath = baseDir + asmName;

@@ -1,6 +1,6 @@
 package fr.ocus.tinyasm.vm.instructions;
 
-public interface IVMCallback {
+public interface IVMInstructionCallback {
     void noOp();
 
     void jump(int address) throws VMThrowableJump;

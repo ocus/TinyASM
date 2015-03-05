@@ -1,15 +1,14 @@
 package fr.ocus.tinyasm.compiler;
 
+import fr.ocus.tinyasm.Instruction;
+import fr.ocus.tinyasm.InstructionsManager;
+import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;
+import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import fr.ocus.tinyasm.compiler.instructions.ASMByteCodeDefinition;
-import fr.ocus.tinyasm.compiler.instructions.ASMInstruction;
-import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;
-import fr.ocus.tinyasm.compiler.instructions.ASMInstructions;
-import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
 
 public class Compiler {
     static private Compiler sCompiler;
@@ -21,7 +20,7 @@ public class Compiler {
         return sCompiler;
     }
 
-    static private Pattern sNumberPattern = Pattern.compile("\\d+");
+    static private final Pattern sNumberPattern = Pattern.compile("\\d+");
 
     public int[] compile(final String content) throws ASMInstructionNotFoundException, ASMWrongArgumentCountException {
         return compile(content.split("\\n"));
@@ -54,24 +53,24 @@ public class Compiler {
         } else {
             template = "";
         }
-        final ASMInstruction instruction = ASMInstructions.get().lookup(mnemonic);
-        if (instruction == null) {
+        final InstructionsManager.ASMVariants instructionVariants = InstructionsManager.get().lookupMnemonic(mnemonic);
+        if (instructionVariants == null) {
             throw new ASMInstructionNotFoundException("Instruction \"" + sanitizedLine + "\" does not exists");
         }
-        final ASMByteCodeDefinition byteCodeDefinition = instruction.lookup(template);
-        if (byteCodeDefinition == null) {
+        final Instruction instruction = instructionVariants.lookupTemplate(template);
+        if (instruction == null) {
             throw new ASMWrongArgumentCountException("Instruction \"" + sanitizedLine + "\" does not have the right number of arguments");
         }
         int numbers[] = new int[0];
         if (parts.length > 1) {
             final Matcher matches = sNumberPattern.matcher(parts[1]);
             while (matches.find()) {
-                numbers = arrMerge(numbers, new int[] { Integer.valueOf(matches.group()) });
+                numbers = arrMerge(numbers, new int[]{Integer.valueOf(matches.group())});
             }
         }
 
         final int[] compiled = new int[numbers.length + 1];
-        compiled[0] = byteCodeDefinition.code;
+        compiled[0] = instruction.getOpcode();
         System.arraycopy(numbers, 0, compiled, 1, numbers.length);
         return compiled;
     }

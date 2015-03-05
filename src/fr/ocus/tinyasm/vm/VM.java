@@ -1,14 +1,11 @@
 package fr.ocus.tinyasm.vm;
 
 import fr.ocus.tinyasm.IScreen;
-import fr.ocus.tinyasm.vm.instructions.VMCallback;
-import fr.ocus.tinyasm.vm.instructions.VMInstruction;
-import fr.ocus.tinyasm.vm.instructions.VMInstructionNotFoundException;
-import fr.ocus.tinyasm.vm.instructions.VMInstructionPointer;
-import fr.ocus.tinyasm.vm.instructions.VMInstructionsManager;
-import fr.ocus.tinyasm.vm.instructions.VMThrowableHalt;
-import fr.ocus.tinyasm.vm.instructions.VMThrowableJump;
-import fr.ocus.tinyasm.vm.instructions.VMUnexeptedEndOfInput;
+import fr.ocus.tinyasm.Instruction;
+import fr.ocus.tinyasm.InstructionsManager;
+import fr.ocus.tinyasm.vm.instructions.*;
+import fr.ocus.tinyasm.vm.stacktrace.VMStackTrace;
+import fr.ocus.tinyasm.vm.stacktrace.VMStackTraceElement;
 
 public class VM {
     static private final int NO_ARG = -1;
@@ -47,13 +44,16 @@ public class VM {
         this(false);
     }
 
-    public void run(final int[] source) {
-        final VMInstructionsManager manager = VMInstructionsManager.get();
+    // TODO add stacktrace!
+    public VMStackTrace run(final int[] source) {
+        VMStackTrace vmStackTrace = new VMStackTrace();
+
+        final InstructionsManager manager = InstructionsManager.get();
 
         final VMInstructionPointer ip = new VMInstructionPointer();
         ip.address = 0;
 
-        final VMCallback callback = new VMCallback() {
+        final VMInstructionCallback callback = new VMInstructionCallback() {
 
             @Override
             public void noOp() {
@@ -91,35 +91,37 @@ public class VM {
 
         do {
             final int opcode = source[ip.address];
-            final VMInstruction instruction = manager.lookup(opcode);
+            final Instruction instruction = manager.lookupOpcode(opcode);
             if (instruction == null) {
                 throw new VMInstructionNotFoundException("Instruction \"" + toHex(opcode) + "\" not found");
             }
+            vmStackTrace.add(new VMStackTraceElement(ip.address, instruction));
+
             if ((ip.address + instruction.getArgc()) >= source.length) {
-                throw new VMUnexeptedEndOfInput("Unexpected end of input for \"" + toHex(opcode) + "\"");
+                throw new VMUnexpectedEndOfInput("Unexpected end of input for \"" + toHex(opcode) + "\"");
             }
             try {
                 switch (instruction.getArgc()) {
-                default:
-                    throw new RuntimeException();
-                case 0:
-                    printDebug(String.format("Executing instruction: 0x%02X", instruction.getOpcode()));
-                    instruction.exec(callback, mMemory, NO_ARG, NO_ARG, NO_ARG);
-                    break;
-                case 1:
-                    printDebug(String.format("Executing instruction: 0x%02X 0x%02X", instruction.getOpcode(), source[ip.address + 1]));
-                    instruction.exec(callback, mMemory, source[ip.address + 1], NO_ARG, NO_ARG);
-                    break;
-                case 2:
-                    printDebug(String.format("Executing instruction: 0x%02X 0x%02X 0x%02X", instruction.getOpcode(), source[ip.address + 1],
-                            source[ip.address + 2]));
-                    instruction.exec(callback, mMemory, source[ip.address + 1], source[ip.address + 2], NO_ARG);
-                    break;
-                case 3:
-                    printDebug(String.format("Executing instruction: 0x%02X 0x%02X 0x%02X 0x%02X", instruction.getOpcode(), source[ip.address + 1],
-                            source[ip.address + 2], source[ip.address + 3]));
-                    instruction.exec(callback, mMemory, source[ip.address + 1], source[ip.address + 2], source[ip.address + 3]);
-                    break;
+                    default:
+                        throw new RuntimeException("Unsupported number of arguments");
+                    case 0:
+                        printDebug(String.format("Executing instruction: 0x%02X", instruction.getOpcode()));
+                        instruction.exec(callback, mMemory, NO_ARG, NO_ARG, NO_ARG);
+                        break;
+                    case 1:
+                        printDebug(String.format("Executing instruction: 0x%02X 0x%02X", instruction.getOpcode(), source[ip.address + 1]));
+                        instruction.exec(callback, mMemory, source[ip.address + 1], NO_ARG, NO_ARG);
+                        break;
+                    case 2:
+                        printDebug(String.format("Executing instruction: 0x%02X 0x%02X 0x%02X", instruction.getOpcode(), source[ip.address + 1],
+                                source[ip.address + 2]));
+                        instruction.exec(callback, mMemory, source[ip.address + 1], source[ip.address + 2], NO_ARG);
+                        break;
+                    case 3:
+                        printDebug(String.format("Executing instruction: 0x%02X 0x%02X 0x%02X 0x%02X", instruction.getOpcode(), source[ip.address + 1],
+                                source[ip.address + 2], source[ip.address + 3]));
+                        instruction.exec(callback, mMemory, source[ip.address + 1], source[ip.address + 2], source[ip.address + 3]);
+                        break;
                 }
             } catch (final VMThrowableJump e) {
                 continue; // address already set in callback.jump()
@@ -135,6 +137,7 @@ public class VM {
             }
         } while (true);
 
+        return vmStackTrace;
     }
 
     private void printDebug(final String message) {

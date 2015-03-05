@@ -1,11 +1,12 @@
 package fr.ocus.tinyasm.tests;
 
+import fr.ocus.tinyasm.vm.VM;
+import fr.ocus.tinyasm.vm.stacktrace.VMStackTrace;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.ocus.tinyasm.vm.VM;
 
 public class VMTest {
 
@@ -31,9 +32,10 @@ public class VMTest {
         }
 
         final VM vm = new VM(debug);
-        vm.run(toIntArray(source));
+        VMStackTrace vmStackTrace = vm.run(toIntArray(source));
         if (debug) {
             vm.dumpMemory();
+            System.err.println(vmStackTrace);
         }
     }
 

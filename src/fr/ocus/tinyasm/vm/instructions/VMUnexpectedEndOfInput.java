@@ -1,8 +1,8 @@
 package fr.ocus.tinyasm.vm.instructions;
 
-public class VMUnexeptedEndOfInput extends RuntimeException {
+public class VMUnexpectedEndOfInput extends RuntimeException {
 
-    public VMUnexeptedEndOfInput(final String message) {
+    public VMUnexpectedEndOfInput(final String message) {
         super(message);
     }
 
