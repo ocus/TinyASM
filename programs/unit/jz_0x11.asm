@@ -1,0 +1,10 @@
+0:MOV [0] 12
+3:MOV [1] 18
+6:JZ [0] 0 ; jump to 12
+9:DPRINT 88
+11:HALT
+12:JZ [1] 1 ; don't jump
+15:DPRINT 77
+17:HALT
+18:DPRINT 99
+20:HALT

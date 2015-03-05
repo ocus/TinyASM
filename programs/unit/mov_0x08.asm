@@ -1,0 +1,4 @@
+MOV [0] 15
+MOV [1] [0]
+DPRINT [1]
+HALT
