@@ -1,0 +1,3 @@
+MOV [0] 896
+APRINT [0]
+HALT
