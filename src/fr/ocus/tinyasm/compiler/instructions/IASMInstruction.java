@@ -1,6 +1,6 @@
 package fr.ocus.tinyasm.compiler.instructions;
 
-public interface IASMByteCodeDefinition {
+public interface IASMInstruction {
 
     String getMnemonic();
 

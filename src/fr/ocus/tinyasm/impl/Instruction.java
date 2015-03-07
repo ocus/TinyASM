@@ -1,18 +1,18 @@
-package fr.ocus.tinyasm;
+package fr.ocus.tinyasm.impl;
 
-import fr.ocus.tinyasm.compiler.instructions.IASMByteCodeDefinition;
-import fr.ocus.tinyasm.vm.instructions.IVMInstruction;
+import fr.ocus.tinyasm.IInstruction;
+import fr.ocus.tinyasm.impl.vm.instructions.VMThrowableHalt;
+import fr.ocus.tinyasm.impl.vm.instructions.VMThrowableJump;
 import fr.ocus.tinyasm.vm.instructions.IVMInstructionCallback;
-import fr.ocus.tinyasm.vm.instructions.VMThrowableHalt;
-import fr.ocus.tinyasm.vm.instructions.VMThrowableJump;
 
-abstract public class Instruction implements IVMInstruction, IASMByteCodeDefinition {
+public abstract class Instruction implements IInstruction {
     private final int opcode;
     private final int argc;
     private final String asmMnemonic;
     private final String asmTemplate;
 
     Instruction(final int opcode, final int argc, final String asmMnemonic, final String asmTemplate) {
+        super();
         this.opcode = opcode;
         this.argc = argc;
         this.asmMnemonic = asmMnemonic;
@@ -40,5 +40,15 @@ abstract public class Instruction implements IVMInstruction, IASMByteCodeDefinit
     }
 
     @Override
-    abstract public void exec(IVMInstructionCallback callback, int[] memory, int arg1, int arg2, int arg3) throws VMThrowableJump, VMThrowableHalt;
+    public abstract void exec(IVMInstructionCallback callback, int[] memory, int arg1, int arg2, int arg3) throws VMThrowableJump, VMThrowableHalt;
+
+    @Override
+    public String toString() {
+        return "Instruction{" +
+                "opcode=" + opcode +
+                ", argc=" + argc +
+                ", asmMnemonic='" + asmMnemonic + '\'' +
+                ", asmTemplate='" + asmTemplate + '\'' +
+                '}';
+    }
 }

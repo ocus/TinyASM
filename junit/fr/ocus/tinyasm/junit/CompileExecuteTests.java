@@ -1,10 +1,11 @@
 package fr.ocus.tinyasm.junit;
 
 import fr.ocus.tinyasm.IScreen;
-import fr.ocus.tinyasm.compiler.Compiler;
-import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;
-import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
-import fr.ocus.tinyasm.vm.VM;
+import fr.ocus.tinyasm.impl.compiler.Compiler;
+import fr.ocus.tinyasm.impl.compiler.instructions.ASMInstructionNotFoundException;
+import fr.ocus.tinyasm.impl.compiler.instructions.ASMWrongArgumentCountException;
+import fr.ocus.tinyasm.impl.vm.VM;
+import fr.ocus.tinyasm.vm.IVM;
 import org.junit.*;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@SuppressWarnings({"MagicNumber", "PublicMethodNotExposedInInterface", "AnonymousInnerClassWithTooManyMethods", "ClassWithTooManyMethods", "AnonymousInnerClass", "ProhibitedExceptionDeclared", "RefusedBequest", "StringConcatenationMissingWhitespace", "AccessOfSystemProperties", "DesignForExtension"})
 public class CompileExecuteTests {
 
     @BeforeClass
@@ -129,7 +131,7 @@ public class CompileExecuteTests {
             compileExecute("random_0x09", new ScreenWrapper(new Screen() {
                 @Override
                 public void printDecimal(final int value) {
-                    Assert.assertTrue(value >= 0 && value <= 25);
+                    Assert.assertTrue((0 <= value) && (25 >= value));
                 }
             }));
         }
@@ -410,48 +412,51 @@ public class CompileExecuteTests {
         }));
     }
 
-    static private class Screen implements IScreen {
+    @SuppressWarnings("DesignForExtension")
+    private static class Screen implements IScreen {
 
         @Override
-        public void printAscii(int value) {
+        public void printAscii(final int value) {
             Assert.fail("Nothing should have print!");
         }
 
         @Override
-        public void printDecimal(int value) {
+        public void printDecimal(final int value) {
             Assert.fail("Nothing should have print!");
         }
     }
 
-    static private interface ITestScreen extends IScreen {
+    private interface ITestScreen extends IScreen {
         boolean shouldHavePrint();
 
         boolean hasPrint();
     }
 
-    static private final class ScreenWrapper implements ITestScreen {
-        private final Screen screen;
+    @SuppressWarnings("ImplicitCallToSuper")
+    private static final class ScreenWrapper implements ITestScreen {
+        private final IScreen screen;
         private final boolean shouldHavePrint;
 
-        private boolean hasPrint = false;
+        private boolean hasPrint;
 
-        public ScreenWrapper(final Screen screen) {
+        ScreenWrapper(final IScreen screen) {
             this(true, screen);
         }
 
-        public ScreenWrapper(final boolean shouldHavePrint, final Screen screen) {
+        @SuppressWarnings("BooleanParameter")
+        ScreenWrapper(final boolean shouldHavePrint, final IScreen screen) {
             this.shouldHavePrint = shouldHavePrint;
             this.screen = screen;
         }
 
         @Override
-        public void printAscii(int value) {
+        public void printAscii(final int value) {
             screen.printAscii(value);
             hasPrint = true;
         }
 
         @Override
-        public void printDecimal(int value) {
+        public void printDecimal(final int value) {
             screen.printDecimal(value);
             hasPrint = true;
         }
@@ -468,12 +473,12 @@ public class CompileExecuteTests {
     }
 
 
-    private void compileExecute(final String name, final ITestScreen screenWrapper) {
+    private static void compileExecute(final String name, final ITestScreen screenWrapper) {
         final String baseDir = System.getProperty("user.dir") + File.separator + "programs" + File.separator + "unit" + File.separator;
 
         final String inputFilePath = baseDir + name + ".asm";
 
-        String asmContent;
+        final String asmContent;
         try {
             asmContent = readFile(inputFilePath, Charset.defaultCharset());
         } catch (final IOException e) {
@@ -482,7 +487,7 @@ public class CompileExecuteTests {
             return;
         }
         try {
-            final VM vm = new VM(screenWrapper);
+            final IVM vm = new VM(screenWrapper);
             vm.run(Compiler.get().compile(asmContent));
             if (screenWrapper.shouldHavePrint() && !screenWrapper.hasPrint()) {
                 Assert.fail("Nothing was printed!");
@@ -499,12 +504,12 @@ public class CompileExecuteTests {
         }
     }
 
-    static private String readFile(final String path, final Charset encoding) throws IOException {
+    private static String readFile(final String path, final Charset encoding) throws IOException {
         final byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }
 
-    static private String getStackTrace(final Exception e) {
+    private static String getStackTrace(final Exception e) {
         final StringWriter sw = new StringWriter();
         final PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);

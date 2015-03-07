@@ -1,15 +1,19 @@
-package fr.ocus.tinyasm.vm;
+package fr.ocus.tinyasm.impl.vm;
 
+import fr.ocus.tinyasm.IInstruction;
+import fr.ocus.tinyasm.IInstructionsManager;
 import fr.ocus.tinyasm.IScreen;
-import fr.ocus.tinyasm.Instruction;
-import fr.ocus.tinyasm.InstructionsManager;
-import fr.ocus.tinyasm.vm.instructions.*;
-import fr.ocus.tinyasm.vm.stacktrace.VMStackTrace;
-import fr.ocus.tinyasm.vm.stacktrace.VMStackTraceElement;
+import fr.ocus.tinyasm.impl.InstructionsManager;
+import fr.ocus.tinyasm.impl.vm.instructions.*;
+import fr.ocus.tinyasm.impl.vm.stacktrace.VMStackTrace;
+import fr.ocus.tinyasm.impl.vm.stacktrace.VMStackTraceElement;
+import fr.ocus.tinyasm.vm.IVM;
+import fr.ocus.tinyasm.vm.instructions.IVMInstructionCallback;
+import fr.ocus.tinyasm.vm.stacktrace.IVMStackTrace;
 
-public class VM {
-    static private final int NO_ARG = -1;
-    static private final int MEMORY_SIZE = 256;
+public class VM implements IVM {
+    private static final int NO_ARG = -1;
+    private static final int MEMORY_SIZE = 256;
 
     private final int[] mMemory = new int[MEMORY_SIZE];
     private final IScreen mScreen;
@@ -44,17 +48,18 @@ public class VM {
         this(false);
     }
 
-    public VMStackTrace run(final int[] source) {
+    @Override
+    public final IVMStackTrace run(final int... source) {
         resetMemory();
 
-        VMStackTrace vmStackTrace = new VMStackTrace();
+        final IVMStackTrace vmStackTrace = new VMStackTrace();
 
-        final InstructionsManager manager = InstructionsManager.get();
+        final IInstructionsManager manager = InstructionsManager.get();
 
         final VMInstructionPointer ip = new VMInstructionPointer();
         ip.address = 0;
 
-        final VMInstructionCallback callback = new VMInstructionCallback() {
+        final IVMInstructionCallback callback = new IVMInstructionCallback() {
 
             @Override
             public void noOp() {
@@ -92,19 +97,17 @@ public class VM {
 
         do {
             final int opcode = source[ip.address];
-            final Instruction instruction = manager.lookupOpcode(opcode);
+            final IInstruction instruction = manager.lookupOpcode(opcode);
             if (instruction == null) {
                 throw new VMInstructionNotFoundException("Instruction \"" + toHex(opcode) + "\" not found");
             }
             vmStackTrace.add(new VMStackTraceElement(ip.address, instruction));
 
             if ((ip.address + instruction.getArgc()) >= source.length) {
-                throw new VMUnexpectedEndOfInput("Unexpected end of input for \"" + toHex(opcode) + "\"");
+                throw new VMUnexpectedEndOfInputException("Unexpected end of input for \"" + toHex(opcode) + '"');
             }
             try {
                 switch (instruction.getArgc()) {
-                    default:
-                        throw new RuntimeException("Unsupported number of arguments");
                     case 0:
                         printDebug(String.format("Executing instruction: 0x%02X", instruction.getOpcode()));
                         instruction.exec(callback, mMemory, NO_ARG, NO_ARG, NO_ARG);
@@ -123,6 +126,8 @@ public class VM {
                                 source[ip.address + 2], source[ip.address + 3]));
                         instruction.exec(callback, mMemory, source[ip.address + 1], source[ip.address + 2], source[ip.address + 3]);
                         break;
+                    default:
+                        throw new RuntimeException("Unsupported number of arguments");
                 }
             } catch (final VMThrowableJump e) {
                 continue; // address already set in callback.jump()
@@ -153,15 +158,22 @@ public class VM {
         }
     }
 
-    static private String toHex(final int v) {
+    private static String toHex(final int v) {
         return String.format("0x%02X", v);
     }
 
-    public void dumpMemory() {
+    public final void dumpMemory() {
         int index = 0;
         for (final int value : mMemory) {
             System.out.println(String.format("0x%02X: 0x%02X", index, value));
             index++;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "VM{" +
+                "debug=" + mDebug +
+                '}';
     }
 }

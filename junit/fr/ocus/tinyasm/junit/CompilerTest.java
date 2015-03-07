@@ -1,10 +1,11 @@
 package fr.ocus.tinyasm.junit;
 
-import fr.ocus.tinyasm.compiler.Compiler;
-import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;
-import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
+import fr.ocus.tinyasm.impl.compiler.Compiler;
+import fr.ocus.tinyasm.impl.compiler.instructions.ASMInstructionNotFoundException;
+import fr.ocus.tinyasm.impl.compiler.instructions.ASMWrongArgumentCountException;
 import org.junit.*;
 
+@SuppressWarnings({"MagicNumber", "PublicMethodNotExposedInInterface", "ChainedMethodCall", "ProhibitedExceptionDeclared", "DesignForExtension"})
 public class CompilerTest {
 
     @BeforeClass

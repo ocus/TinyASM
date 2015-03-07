@@ -1,4 +1,4 @@
-package fr.ocus.tinyasm.vm.instructions;
+package fr.ocus.tinyasm.impl.vm.instructions;
 
 public class VMInstructionNotFoundException extends RuntimeException {
 

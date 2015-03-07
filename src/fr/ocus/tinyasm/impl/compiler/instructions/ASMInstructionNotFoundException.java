@@ -1,9 +1,13 @@
-package fr.ocus.tinyasm.compiler.instructions;
+package fr.ocus.tinyasm.impl.compiler.instructions;
 
 public class ASMInstructionNotFoundException extends RuntimeException {
 
     public ASMInstructionNotFoundException(final String message) {
         super(message);
+    }
+
+    public ASMInstructionNotFoundException(final String message, Throwable exception) {
+        super(message, exception);
     }
 
     @SuppressWarnings("UnusedDeclaration")
