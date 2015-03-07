@@ -3,6 +3,7 @@ package fr.ocus.tinyasm.demos;
 import fr.ocus.tinyasm.vm.VM;
 import fr.ocus.tinyasm.vm.stacktrace.VMStackTrace;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class VMDemo {
     }
 
     static private void executeProgram(final String tinyName, final boolean debug) {
-        final String inputFilePath = System.getProperty("user.dir") + "\\programs\\" + tinyName;
+        final String inputFilePath = System.getProperty("user.dir") + File.separator + "programs" + File.separator + tinyName;
         final List<Integer> source = new ArrayList<Integer>();
         final FileInputStream inputFileStream;
         try {

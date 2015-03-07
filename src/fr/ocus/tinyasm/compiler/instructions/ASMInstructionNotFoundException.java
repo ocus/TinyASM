@@ -6,6 +6,7 @@ public class ASMInstructionNotFoundException extends RuntimeException {
         super(message);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private static final long serialVersionUID = -1230852139490886635L;
 
 }

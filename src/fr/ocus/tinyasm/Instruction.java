@@ -1,8 +1,8 @@
 package fr.ocus.tinyasm;
 
 import fr.ocus.tinyasm.compiler.instructions.IASMByteCodeDefinition;
-import fr.ocus.tinyasm.vm.instructions.IVMInstructionCallback;
 import fr.ocus.tinyasm.vm.instructions.IVMInstruction;
+import fr.ocus.tinyasm.vm.instructions.IVMInstructionCallback;
 import fr.ocus.tinyasm.vm.instructions.VMThrowableHalt;
 import fr.ocus.tinyasm.vm.instructions.VMThrowableJump;
 
@@ -38,7 +38,6 @@ abstract public class Instruction implements IVMInstruction, IASMByteCodeDefinit
     public final String getTemplate() {
         return asmTemplate;
     }
-
 
     @Override
     abstract public void exec(IVMInstructionCallback callback, int[] memory, int arg1, int arg2, int arg3) throws VMThrowableJump, VMThrowableHalt;

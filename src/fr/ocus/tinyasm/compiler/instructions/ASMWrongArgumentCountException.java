@@ -6,5 +6,6 @@ public class ASMWrongArgumentCountException extends IllegalArgumentException {
         super(message);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private static final long serialVersionUID = 9174655124407793885L;
 }

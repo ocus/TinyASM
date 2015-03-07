@@ -45,6 +45,8 @@ public class VM {
     }
 
     public VMStackTrace run(final int[] source) {
+        resetMemory();
+
         VMStackTrace vmStackTrace = new VMStackTrace();
 
         final InstructionsManager manager = InstructionsManager.get();
@@ -137,6 +139,12 @@ public class VM {
         } while (true);
 
         return vmStackTrace;
+    }
+
+    private void resetMemory() {
+        for (int address = 0; address < MEMORY_SIZE; address++) {
+            mMemory[address] = 0x00;
+        }
     }
 
     private void printDebug(final String message) {

@@ -7,7 +7,7 @@ import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
 import fr.ocus.tinyasm.vm.VM;
 import org.junit.*;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class CompileExecute {
+public class CompileExecuteTests {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -469,7 +469,7 @@ public class CompileExecute {
 
 
     private void compileExecute(final String name, final ITestScreen screenWrapper) {
-        final String baseDir = System.getProperty("user.dir") + "\\programs\\unit\\";
+        final String baseDir = System.getProperty("user.dir") + File.separator + "programs" + File.separator + "unit" + File.separator;
 
         final String inputFilePath = baseDir + name + ".asm";
 
@@ -481,7 +481,6 @@ public class CompileExecute {
             Assert.fail(getStackTrace(e));
             return;
         }
-        final FileOutputStream out = null;
         try {
             final VM vm = new VM(screenWrapper);
             vm.run(Compiler.get().compile(asmContent));
@@ -497,14 +496,6 @@ public class CompileExecute {
         } catch (final ASMInstructionNotFoundException e) {
             e.printStackTrace();
             Assert.fail(getStackTrace(e));
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 

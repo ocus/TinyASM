@@ -6,6 +6,7 @@ public class VMUnexpectedEndOfInput extends RuntimeException {
         super(message);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private static final long serialVersionUID = -5086826511038191827L;
 
 }
