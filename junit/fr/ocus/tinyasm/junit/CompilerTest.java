@@ -1,4 +1,4 @@
-package fr.ocus.tinyasm;
+package fr.ocus.tinyasm.junit;
 
 import fr.ocus.tinyasm.compiler.Compiler;
 import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;

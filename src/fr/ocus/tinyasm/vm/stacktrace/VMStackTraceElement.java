@@ -13,6 +13,6 @@ public class VMStackTraceElement {
 
     @Override
     public String toString() {
-        return String.format("[0x%1$02X] 0x%2$02X", address, instruction.getOpcode());
+        return String.format("[0x%1$02X] 0x%2$02X (%3$s)", address, instruction.getOpcode(), instruction.getMnemonic());
     }
 }

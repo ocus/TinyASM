@@ -1,4 +1,4 @@
-package fr.ocus.tinyasm.tests;
+package fr.ocus.tinyasm.demos;
 
 import fr.ocus.tinyasm.vm.VM;
 import fr.ocus.tinyasm.vm.stacktrace.VMStackTrace;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VMTest {
+public class VMDemo {
 
     public static void main(final String[] args) {
         // executeProgram("add.tiny", !true);

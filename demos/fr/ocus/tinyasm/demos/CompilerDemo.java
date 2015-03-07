@@ -1,4 +1,4 @@
-package fr.ocus.tinyasm.tests;
+package fr.ocus.tinyasm.demos;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,7 +11,7 @@ import fr.ocus.tinyasm.compiler.Compiler;
 import fr.ocus.tinyasm.compiler.instructions.ASMInstructionNotFoundException;
 import fr.ocus.tinyasm.compiler.instructions.ASMWrongArgumentCountException;
 
-class CompilerTest {
+class CompilerDemo {
     public static void main(final String[] args) {
         // compileProgram("add.asm", "add.tiny");
         compileProgram("factorial.asm", "factorial.tiny");

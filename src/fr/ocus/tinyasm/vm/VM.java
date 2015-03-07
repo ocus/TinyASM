@@ -44,7 +44,6 @@ public class VM {
         this(false);
     }
 
-    // TODO add stacktrace!
     public VMStackTrace run(final int[] source) {
         VMStackTrace vmStackTrace = new VMStackTrace();
 
